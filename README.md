@@ -19,12 +19,11 @@ Tag2
 
 Below is one concrete example of input file:-
 
-# Sample Input File #
+## Sample Input File
 
 If the communication is not initiated but happens as a response is security rule needed in Network Security Group? Explain why.
 No.
 
-# Comments will be ignored.
 Not needed because NSG is stateful. It will remember that a request was initiated and it will remember till a response is received.
 VNet
 
@@ -32,7 +31,6 @@ If you have 4 VMs which need to be applied the same network security rule how wi
 By creating Application Security group and putting the VMs in the same Application Security Group. This application Security Group can then be given a Source or Destination to the rules of NSG
 vNet
 
-#Another question
 What are the points that you will check if traffic is not flowing between two resources in Azure?
 0. Check if DNS Route is set.
 1. Check if VNet Route is set.
