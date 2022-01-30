@@ -1,0 +1,21 @@
+---
+If the communication is not initiated but happens as a response is security rule needed? Explain why.
+No.
+
+Not needed because NSG is stateful. It will remember that a request was initiated and it will remember till a response is received.
+VNET
+...
+
+---
+If you have 4 VMs which need to be applied the same network security rule how will you do it without adding 4 different IP addresses for the VMs?
+By creating Application Security group and putting the VMs in the same Application Security Group. This application Security Group can then be given a Source or Destination to the rules of NSG
+
+What are the points that you will check if traffic is not flowing between two resources in Azure?
+0. Check if DNS Route is set.
+1. Check if VNet Route is set.
+2. Check if Azure Firewall is allowing the traffic.
+3. Check if Subnet level NSG allows traffic.
+4. Check if NIC level NSG allows traffic.
+5. Check if OS firewall allows traffic.
+VNET
+...
