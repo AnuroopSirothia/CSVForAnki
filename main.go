@@ -17,6 +17,9 @@ func main() {
 
 	// Save file
 	writeToCSVFile(notesInCSVFormat)
+
+	// Print the file that is saved for debugging. This should enabled optionally.
+	fmt.Print("Output File:\n", string(notesInCSVFormat))
 }
 
 func openNotesFile() *os.File {
@@ -73,7 +76,6 @@ func parseQA(scanner *bufio.Scanner) []byte {
 	scanner.Scan()
 	questionLine = scanner.Text()
 	questionOutput := fmt.Sprintf("\n%q,", questionLine)
-	fmt.Print(questionOutput)
 	outputToSave = append(outputToSave, []byte(questionOutput)...)
 
 	for scanner.Scan() {
@@ -84,19 +86,17 @@ func parseQA(scanner *bufio.Scanner) []byte {
 		if currentLine == "..." {
 			answerLines.WriteString(currentLineButTwo)
 
-			ansOutput := fmt.Sprintf("%q,", answerLines.String())
-			fmt.Print(ansOutput)
+			ansOutput := fmt.Sprintf("%s,", answerLines.String())
 			outputToSave = append(outputToSave, []byte(ansOutput)...)
-			tagOutput := fmt.Sprintf("%q,\n", currentLineButOne)
-			fmt.Print(tagOutput)
+			tagOutput := fmt.Sprintf("%q\n", currentLineButOne)
 			outputToSave = append(outputToSave, []byte(tagOutput)...)
-			return outputToSave
+			break
 		}
 
-		//		fmt.Println("Writing to answer buffer ", currentLineButTwo)
-		answerLines.WriteString(currentLineButTwo)
+		ansOutput := fmt.Sprintf("%s\r\n", currentLineButTwo)
+		answerLines.WriteString(ansOutput)
 
 	} //for end
 
-	return nil
+	return outputToSave
 }
