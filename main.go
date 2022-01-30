@@ -9,28 +9,29 @@ import (
 )
 
 func main() {
+	if len(os.Args) != 3 {
+		log.Fatal("Please give input and output file name.")
+	}
+
+	inputFileName := os.Args[1]
+	outputFileName := os.Args[2]
+
 	// Open input file which contains notes.
-	notesFile := openNotesFile()
+	notesFile := openNotesFile(inputFileName)
 
 	// Parse file
 	notesInCSVFormat := parseFile(notesFile)
 
 	// Save file
-	writeToCSVFile(notesInCSVFormat)
+	writeToCSVFile(notesInCSVFormat, outputFileName)
 
 	// Print the file that is saved for debugging. This should enabled optionally.
-	fmt.Print("Output File:\n", string(notesInCSVFormat))
+	//	fmt.Print("Output File:\n", string(notesInCSVFormat))
 }
 
-func openNotesFile() *os.File {
+func openNotesFile(fileToConvert string) *os.File {
 	log.SetPrefix("csvforanki: ")
 	log.SetFlags(0)
-
-	if len(os.Args) != 2 {
-		log.Fatal("Please give file name.")
-	}
-
-	fileToConvert := os.Args[1]
 
 	var inputFile, e = os.Open(fileToConvert)
 	if e != nil {
@@ -58,8 +59,8 @@ func parseFile(file *os.File) []byte {
 	return parsedData
 }
 
-func writeToCSVFile(data []byte) {
-	e := os.WriteFile("output/import_ready.txt", data, 0777)
+func writeToCSVFile(data []byte, outputFileName string) {
+	e := os.WriteFile(outputFileName+".csv", data, 0777)
 
 	if e != nil {
 		log.Fatal(e)
@@ -86,14 +87,14 @@ func parseQA(scanner *bufio.Scanner) []byte {
 		if currentLine == "..." {
 			answerLines.WriteString(currentLineButTwo)
 
-			ansOutput := fmt.Sprintf("%s,", answerLines.String())
+			ansOutput := fmt.Sprintf("\"%s\",", answerLines.String())
 			outputToSave = append(outputToSave, []byte(ansOutput)...)
 			tagOutput := fmt.Sprintf("%q\n", currentLineButOne)
 			outputToSave = append(outputToSave, []byte(tagOutput)...)
 			break
 		}
 
-		ansOutput := fmt.Sprintf("%s\r\n", currentLineButTwo)
+		ansOutput := fmt.Sprintf("%s\n", currentLineButTwo)
 		answerLines.WriteString(ansOutput)
 
 	} //for end
