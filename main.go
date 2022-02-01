@@ -9,21 +9,41 @@ import (
 )
 
 func main() {
-	log.SetPrefix("csvforanki: ")
-	log.SetFlags(0)
-
-	if len(os.Args) != 2 {
-		log.Fatal("Please give file name.")
+	if len(os.Args) != 3 {
+		log.Fatal("Please give input and output file name.")
 	}
 
-	fileToConvert := os.Args[1]
+	inputFileName := os.Args[1]
+	outputFileName := os.Args[2]
+
+	// Open input file which contains notes.
+	notesFile := openNotesFile(inputFileName)
+
+	// Parse file
+	notesInCSVFormat := parseFile(notesFile)
+
+	// Save file
+	writeToCSVFile(notesInCSVFormat, outputFileName)
+
+	// Print the file that is saved for debugging. This should enabled optionally.
+	//	fmt.Print("Output File:\n", string(notesInCSVFormat))
+}
+
+func openNotesFile(fileToConvert string) *os.File {
+	log.SetPrefix("csvforanki: ")
+	log.SetFlags(0)
 
 	var inputFile, e = os.Open(fileToConvert)
 	if e != nil {
 		log.Fatal(e)
 	}
 
-	scanner := bufio.NewScanner(inputFile)
+	return inputFile
+}
+
+func parseFile(file *os.File) []byte {
+	scanner := bufio.NewScanner(file)
+	var parsedData []byte
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -33,20 +53,31 @@ func main() {
 		}
 
 		if line == "---" {
-			formatQA(scanner)
+			parsedData = append(parsedData, parseQA(scanner)...)
 		}
+	} //for end
+	return parsedData
+}
+
+func writeToCSVFile(data []byte, outputFileName string) {
+	e := os.WriteFile(outputFileName+".csv", data, 0777)
+
+	if e != nil {
+		log.Fatal(e)
 	}
 }
 
-// Format the Question, Answer and Tag
-func formatQA(scanner *bufio.Scanner) {
-	var currentLine, currentLineButOne, currentLineButTwo string
-	var questionLine string
-	var answer strings.Builder
+// Parse the Question, Answer and Tag. Each tuple of question, answer and tag starts with --- and ends with ... like a YAML file.
+func parseQA(scanner *bufio.Scanner) []byte {
+	var currentLine, currentLineButOne, currentLineButTwo, questionLine string
+	var answerLines strings.Builder
+
+	var outputToSave []byte
 
 	scanner.Scan()
 	questionLine = scanner.Text()
-	fmt.Printf("\n%q,", questionLine)
+	questionOutput := fmt.Sprintf("\n%q,", questionLine)
+	outputToSave = append(outputToSave, []byte(questionOutput)...)
 
 	for scanner.Scan() {
 		currentLineButTwo = currentLineButOne
@@ -54,14 +85,19 @@ func formatQA(scanner *bufio.Scanner) {
 		currentLine = scanner.Text()
 
 		if currentLine == "..." {
-			answer.WriteString(currentLineButTwo)
-			fmt.Printf("%q,", answer.String())
-			fmt.Printf("%q,\n", currentLineButOne)
+			answerLines.WriteString(currentLineButTwo)
+
+			ansOutput := fmt.Sprintf("\"%s\",", answerLines.String())
+			outputToSave = append(outputToSave, []byte(ansOutput)...)
+			tagOutput := fmt.Sprintf("%q\n", currentLineButOne)
+			outputToSave = append(outputToSave, []byte(tagOutput)...)
 			break
 		}
 
-		//		fmt.Println("Writing to answer buffer ", currentLineButTwo)
-		answer.WriteString(currentLineButTwo)
+		ansOutput := fmt.Sprintf("%s\n", currentLineButTwo)
+		answerLines.WriteString(ansOutput)
 
 	} //for end
+
+	return outputToSave
 }

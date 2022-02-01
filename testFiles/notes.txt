@@ -1,6 +1,0 @@
-Notes to myself
-
-- Question starts with --- and ends with ...
-- First line is Question and last line is tag.
-- Specifying tag is mandatory.
-- Tag should be in all caps.
