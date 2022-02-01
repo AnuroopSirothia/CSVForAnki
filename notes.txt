@@ -3,4 +3,15 @@ Notes to myself
 - Question starts with --- and ends with ...
 - First line is Question and last line is tag.
 - Specifying tag is mandatory.
+- Tag should be in all caps.
 - Question should always be in one line. Mention this.
+
+TODO
+- Update readme file with correct format of input file.
+
+BUGS
+- Answers with double quotes are failing to parse. Rectify this bug.
+
+NICE TO HAVE FEATURES
+- File should be converted by right clicking the file and selecting csvforanki program.
+- If no file name is given it should take the name of the source file.
